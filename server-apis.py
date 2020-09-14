@@ -30,31 +30,44 @@ sensor_put_args.add_argument("status", type=str, help="error!",required=True)
 
 
 resource_fields = {
-    'device_id': fields.String,
+    'device_id': fields.Integer,
     'location': fields.String,
     'owner': fields.String,                         #ALL THE DATA TYPES , EXCEPT THE DEVICE_ID,  ARE OF TYPE STRING IN THE DATABASE.
     'sensor_level': fields.String,
     'status': fields.String
 }
 
-
+data1=  {
+    'device_id': 1 ,
+    'location': "Chennai",
+    'owner': "Vichu",                         #ALL THE DATA TYPES , EXCEPT THE DEVICE_ID,  ARE OF TYPE STRING IN THE DATABASE.
+    'sensor_level': "Full",
+    'status': "Running"
+}
+#db.session.add(data1)
+#db.session.commit()
 
 
 class sensor(Resource):
     @marshal_with(resource_fields)
-    def get(self,device_id,sensor_level,location,owner,status):         #THE GET API FOR THE DATA READING CONTINUOUSLY
+    @app.route('/getdata', methods=['GET'])
+    def getdata(self,device_id):         #THE GET API FOR THE DATA READING CONTINUOUSLY
         result = sensorDatabase.query.filter_by(id=device_id).first()
         return result
 
     @marshal_with(resource_fields)
-    def get(self, device_id, sensor_level, location, owner, status):
-        result = sensorDatabase.query.filter_by(id=device_id).first()                   #GET API FOR THE OUTPUT STATE
-        return result
+    @app.route('/getOutputState', methods=['GET'])
+    def outputstate(self, device_id):
+        result = sensorDatabase.query.filter_by(id=device_id).first()    #GET API FOR THE OUTPUT STATE
+        return result.status
+
+
 
     @marshal_with(resource_fields)
-    def get(self, device_id,status , location):
+    @app.route('/getConfig', methods=['GET'])
+    def config(self, device_id):
         result = sensorDatabase.query.filter_by(id=device_id).first()           # THE GET API FOR THE INITIAL CONFIGURATION (CALLED ONLY ONCE)
-        return result
+        return {result.location, result.owner, result.status}
 
 
 
