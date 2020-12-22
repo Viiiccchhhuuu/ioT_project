@@ -34,7 +34,7 @@ resource_fields = {
     'location': fields.String,
     'owner': fields.String,                         #ALL THE DATA TYPES , EXCEPT THE DEVICE_ID,  ARE OF TYPE STRING IN THE DATABASE.
     'sensor_level': fields.String,
-    'status': fields.String
+    'status': fields.String     #keep as 0 and 1 to reduce processing .
 }
 
 data1=  {
@@ -50,9 +50,10 @@ data1=  {
 
 class sensor(Resource):
     @marshal_with(resource_fields)
-    @app.route('/getdata', methods=['GET'])
-    def getdata(self,device_id):         #THE GET API FOR THE DATA READING CONTINUOUSLY
+    @app.route('/updatedata', methods=['GET'])
+    def updatedata(self,device_id):         #THE GET API FOR THE DATA READING CONTINUOUSLY
         result = sensorDatabase.query.filter_by(id=device_id).first()
+        db.session.upda  #keep pushing data of sensor value
         return result
 
     @marshal_with(resource_fields)
@@ -67,7 +68,8 @@ class sensor(Resource):
     @app.route('/getConfig', methods=['GET'])
     def config(self, device_id):
         result = sensorDatabase.query.filter_by(id=device_id).first()           # THE GET API FOR THE INITIAL CONFIGURATION (CALLED ONLY ONCE)
-        return {result.location, result.owner, result.status}
+        return {result.location, result.owner, result.status}                   #pushes first time , n from here only retrieval.
+
 
 
 
